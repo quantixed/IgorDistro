@@ -12,10 +12,15 @@ The code for this project was lifted from [Ryotako's excellent menu for loading 
 5. Now create two shortcuts (or aliases) to point to these folders. Do this on any computers that will share the code.
 
 Shortcut/alias to the IP folder in
+
 Mac: `/Users/<user>/Documents/WaveMetrics/Igor Procedures`
+
 Windows: `C:\Users\<user>\Documents\WaveMetrics\Igor Procedures`
+
 Shortcut/alias to the UP folder in
+
 Mac: `/Users/<user>/Documents/WaveMetrics/User Procedures`
+
 Windows: `C:\Users\<user>\Documents\WaveMetrics\User Procedures`
 
 That's it! Start up Igor and the code will appear in a menu item called *IgorDistro*.
