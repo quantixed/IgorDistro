@@ -349,36 +349,36 @@ static Function/S MenuItemProcNum()
 	WAVE/T w = root:Packages:LabCode:LabCode
 	Variable num = WaveExists(w) ? DimSize(w,0) : 0
 	String s
-	sprintf s,"(%d LabCode Procedures", num
+	sprintf s,"(%d LabCode Categories", num
 	return s
 End
 
 static Function/S SubMenuTitle(i)
 	Variable i
 	WAVE/T w = root:Packages:LabCode:LabCode
-	if(WaveExists(w) && numpnts(w) >= 20*i)
-		return w[20*i]+" ..."
+	if(WaveExists(w) && DimSize(w,0) >= i)
+		return w[i]+" ..."
 	else
 		return "-"
 	endif
 End
 static Function/S MenuItem(i,j)
 	Variable i,j
-	WAVE/T w = root:Packages:LabCode:LabCode
-	if(WaveExists(w) && 20*i+j < DimSize(w,0))
-		return w[20*i+j]
+	WAVE/T w = $("root:Packages:LabCode:ipfW_" + num2Str(i))
+	if(WaveExists(w) && DimSize(w,0) > j)
+		return w[j]
 	else
 		return ""
 	endif
 End
 static Function MenuCommand(i,j)
 	Variable i,j
-	WAVE/T w = root:Packages:LabCode:LabCode
+	WAVE/T w = $("root:Packages:LabCode:ipfW_" + num2Str(i))
 	if(WaveExists(w))
-		String procName=w[20*i+j]
+		String procName=w[j]
 		Execute/P "INSERTINCLUDE \""+RemoveEnding(procName,".ipf")+"\""
 		Execute/P "COMPILEPROCEDURES "
-		Execute/P "DisplayProcedure/W=$\""+procName+".ipf\""	
+		Execute/P "DisplayProcedure/W=$\""+procName+".ipf\""
 	endif
 End
 
@@ -390,7 +390,7 @@ static Function MenuCommandToggleDisplayFlag()
 	if(NumType(GetFlag("display")))
 		SetFlag("display",!LabCode_DisplayAfterInclude)
 	else
-		SetFlag("display",!GetFlag("display"))	
+		SetFlag("display",!GetFlag("display"))
 	endif
 End
 
@@ -398,7 +398,7 @@ End
 /////////////////////////////////////////////////////////////////////////////////
 // Functions ////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
-// WaveMatricsFiles
+
 strconstant tmpPath = "LabCodeProceduresTmpPath"
 
 static Function/WAVE LabCodeProcedures()
@@ -408,20 +408,22 @@ static Function/WAVE LabCodeProcedures()
 	endif
 	PathStr = ReplaceString(":IP:",ParseFilePath(1, PathStr, ":", 1, 0),":UP:")
 	WAVE/T dirs = DirectoryRec(PathStr)
-	Variable i,N=DimSize(dirs,0); Make/FREE/T/N=0 buf
-	for(i=0;i<N;i+=1)
+	Variable nDirs = DimSize(dirs,0)
+	String ipfList, ipfWaveName
+	Variable i
+	for(i = 0; i < nDirs; i += 1)
 		NewPath/O/Q/Z $tmpPath dirs[i]
 		if(V_Flag)
 			Make/FREE/T/N=0 buf; return buf
 		endif
-		String ipfList = IndexedFile($tmpPath,-1,".ipf")
-		Make/FREE/T/N=(ItemsInList(ipfList)) ipfWave = StringFromList(p,ipfList)
-		Concatenate/T/NP {ipfWave},buf 
+		ipfList = IndexedFile($tmpPath,-1,".ipf")
+		ipfWaveName = "root:Packages:LabCode:ipfW_" + num2Str(i)
+		Make/O/T/N=(ItemsInList(ipfList)) $ipfWaveName = RemoveEnding(StringFromList(p,ipfList),".ipf")
+		Sort $ipfWaveName,$ipfWaveName
 	endfor
-	KillPath/Z $tmpPath
-	buf = RemoveEnding(buf,".ipf")
-	Sort buf,buf
-	return buf
+	dirs = ReplaceString(PathStr,dirs,"")
+	dirs = RemoveEnding(dirs,":")
+	return dirs
 End
 static Function/WAVE DirectoryRec(fullPath)
 	String fullPath
@@ -455,7 +457,7 @@ static Function SetFlag(name,value)
 	String name; Variable value
 	NewDataFolder/O root:Packages
 	NewDataFolder/O root:Packages:LabCode
-	Variable/G $"root:Packages:LabCode:"+name = value	
+	Variable/G $"root:Packages:LabCode:"+name = value
 End
 
 static Function GetFlag(name)
