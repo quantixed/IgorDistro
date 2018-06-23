@@ -357,7 +357,7 @@ static Function/S SubMenuTitle(i)
 	Variable i
 	WAVE/T w = root:Packages:LabCode:LabCode
 	if(WaveExists(w) && numpnts(w) >= 20*i)
-		return w[20*i]+" ..."
+		return w[20*i]
 	else
 		return "-"
 	endif
@@ -378,7 +378,7 @@ static Function MenuCommand(i,j)
 		String procName=w[20*i+j]
 		Execute/P "INSERTINCLUDE \""+RemoveEnding(procName,".ipf")+"\""
 		Execute/P "COMPILEPROCEDURES "
-		Execute/P "DisplayProcedure/W=$\""+procName+".ipf\""	
+		Execute/P "DisplayProcedure/W=$\""+procName+".ipf\""
 	endif
 End
 
@@ -390,7 +390,7 @@ static Function MenuCommandToggleDisplayFlag()
 	if(NumType(GetFlag("display")))
 		SetFlag("display",!LabCode_DisplayAfterInclude)
 	else
-		SetFlag("display",!GetFlag("display"))	
+		SetFlag("display",!GetFlag("display"))
 	endif
 End
 
@@ -416,7 +416,7 @@ static Function/WAVE LabCodeProcedures()
 		endif
 		String ipfList = IndexedFile($tmpPath,-1,".ipf")
 		Make/FREE/T/N=(ItemsInList(ipfList)) ipfWave = StringFromList(p,ipfList)
-		Concatenate/T/NP {ipfWave},buf 
+		Concatenate/T/NP {ipfWave},buf
 	endfor
 	KillPath/Z $tmpPath
 	buf = RemoveEnding(buf,".ipf")
@@ -455,7 +455,7 @@ static Function SetFlag(name,value)
 	String name; Variable value
 	NewDataFolder/O root:Packages
 	NewDataFolder/O root:Packages:LabCode
-	Variable/G $"root:Packages:LabCode:"+name = value	
+	Variable/G $"root:Packages:LabCode:"+name = value
 End
 
 static Function GetFlag(name)

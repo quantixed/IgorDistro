@@ -357,7 +357,7 @@ static Function/S SubMenuTitle(i)
 	Variable i
 	WAVE/T w = root:Packages:LabCode:LabCode
 	if(WaveExists(w) && DimSize(w,0) >= i)
-		return w[i]+" ..."
+		return w[i]
 	else
 		return "-"
 	endif
